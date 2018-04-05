@@ -12,6 +12,8 @@ typedef struct _nodo{
 
 typedef struct _arvore{
 	TpNodo *raiz;
+	int NDir;
+	int NEsq;
 } TpArvore;
 
 TpArvore *inicializa(){//aloca memoria para inicializar a arvore
@@ -33,12 +35,13 @@ void *inserir(int key, TpArvore *arvore){
 			nodo->pai = NULL;
 			printf("d");
 			arvore->raiz = nodo;
+			NDir = 0;
+			NEsq = 0;
 	}else	if(key == arvore->raiz->chave){
 			printf("Chave ja existente!");
 			return;
 		}else if(key > arvore->raiz->chave ){
 			if(arvore->raiz->dir != NULL){
-				arvore->raiz = arvore->raiz->dir;
 				inserir(key, arvore);
 			}else{
 				TpNodo *nodo = (TpNodo*)malloc(sizeof(TpNodo));
@@ -55,6 +58,9 @@ void *inserir(int key, TpArvore *arvore){
 					}
 				nodo->altdireita = 0;
 				arvore->raiz->dir = nodo;
+				arvore->raiz = arvore->raiz->dir;
+				if(arvore.NDir < arvore->raiz->nivel)
+					arvore.NDir = arvore->raiz->nivel;
 				}
 			}else {//key < raiz.chave
 				if(arvore->raiz->esq != NULL){
@@ -62,7 +68,6 @@ void *inserir(int key, TpArvore *arvore){
 					inserir(key, arvore);
 				}else{
 					TpNodo *nodo = (TpNodo*)malloc(sizeof(TpNodo));
-					arvore->raiz->esq = nodo;
 					nodo->chave = key;
 					nodo->pai = arvore->raiz;
 					nodo->esq = NULL;
@@ -74,9 +79,56 @@ void *inserir(int key, TpArvore *arvore){
 					else
 						nodo->altdireita = arvore->raiz->dir->altura;
 					nodo->altesquerda = 0;
+					arvore->raiz->esq = nodo;
+					arvore->raiz = arvore->raiz->esq;
+					if(arvore.NEsq < arvore->raiz->nivel)
+						arvore.NEsq = arvore->raiz->nivel;
 			}
 		}
 
+void *balancearEsq(TpArvore arvore){
+	if(arvore->raiz->esq == NULL && arvore->raiz->dir == NULL){
+		return;
+	else if(arvore->raiz->esq != NULL){
+		if(arvore-raiz->dir == NULL)
+			arvore->raiz->esq->altdireita = 0;
+		else
+			arvore->raiz->esq->altdireita = arvore->raiz->dir->altura;
+		if(arvore->raiz->esq->alt > arvore->raiz->esq->altdireita){
+			int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
+			if(calcB <= -2 || calcB >= 2){
+				arvore->raiz = arvore->raiz->esq;
+				TpNodo *aux = arvore->raiz;
+				arvore->raiz->pai = arvore->raiz->pai->pai;
+				arvore->raiz->pai->esq = arvore->raiz;
+				arvore->raiz->dir = aux->pai;
+				arvore->raiz->dir->pai = arvore->raiz;
+				if(aux->pai->altdireita == 0){
+					arvore->raiz->dir->dir = NULL;
+					arvore->raiz->dir->esq = NULL;
+				}else
+					arvore->raiz->dir->esq = NULL;
+			}else
+				arvore->raiz = arvore->raiz->esq;
+				balancearEsq(arvore);
+				return;
+		}else if(arvore->raiz->esq->alt < arvore->raiz->esq->altdireita{
+			int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
+			if(calcB <= -2 || calcB >= 2){
+				arvore->raiz = arvore->raiz->dir;
+				TpNodo *aux = arvore->raiz;
+				arvore->raiz->pai = arvore->raiz->pai->pai;
+				arvore->raiz->esq = aux->pai;
+				arvore->raiz->pai->esq = arvore->raiz;
+				arvore->raiz->esq->pai = arvore->raiz;
+				if(aux->pai->esq == NULL){
+					arvore->raiz->esq->dir = NULL;
+					arvore->raiz->esq->esq = NULL;
+				}else
+					arvore->raiz->esq->dir = NULL;
+		}
+	}	
+}
 
 }
 
@@ -95,6 +147,16 @@ int main(){
 			case 1:
 				scanf("%d", &key);
 				inserir(key, arvore);
+				while(arvore->raiz->pai != NULL){
+					if(arvore->raiz->pai->altura == arvore->raiz->altura){
+						TpNodo prev = (TpNodo*)malloc(sizeof(TpNodo));
+						prev = arvore->raiz;
+						arvore->raiz = arvore->raiz->pai;
+						arvore->raiz->altura = prev->altura + 1;
+					} else{
+						arvore->raiz = arvore->raiz->pai;
+					}
+				}
 				break;
 			case 2:
 				break;
