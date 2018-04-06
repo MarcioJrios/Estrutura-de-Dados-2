@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+int Cont;
 typedef struct _nodo{
 	int chave;
 	int altura, nivel;
@@ -85,18 +86,23 @@ void *inserir(int key, TpArvore *arvore){
 						arvore.NEsq = arvore->raiz->nivel;
 			}
 		}
+}
+
+void *balancearDir(TpArvore arvore){
+
+}
 
 void *balancearEsq(TpArvore arvore){
-	if(arvore->raiz->esq == NULL && arvore->raiz->dir == NULL){
+	if(arvore->raiz->esq == NULL && arvore->raiz->dir == NULL){//Se estiver em uma folha finaliza
 		return;
-	else if(arvore->raiz->esq != NULL){
+	}else if(arvore->raiz->esq != NULL){//Verifica se os filhos sao nulos para fazer a comparação de altura
 		if(arvore-raiz->dir == NULL)
 			arvore->raiz->esq->altdireita = 0;
 		else
 			arvore->raiz->esq->altdireita = arvore->raiz->dir->altura;
-		if(arvore->raiz->esq->alt > arvore->raiz->esq->altdireita){
+		if(arvore->raiz->esq->alt > arvore->raiz->esq->altdireita){//se a altura do filho esquerdo for maior que o direito
 			int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
-			if(calcB <= -2 || calcB >= 2){
+			if(calcB <= -2 || calcB >= 2){//Caso do right right
 				arvore->raiz = arvore->raiz->esq;
 				TpNodo *aux = arvore->raiz;
 				arvore->raiz->pai = arvore->raiz->pai->pai;
@@ -108,11 +114,19 @@ void *balancearEsq(TpArvore arvore){
 					arvore->raiz->dir->esq = NULL;
 				}else
 					arvore->raiz->dir->esq = NULL;
-			}else
+				//avança para o proximo no com maior altura e executa novamente a verificação
 				arvore->raiz = arvore->raiz->esq;
+				Cont++
 				balancearEsq(arvore);
 				return;
-		}else if(arvore->raiz->esq->alt < arvore->raiz->esq->altdireita{
+			}else{
+				//Se esse nó nao esta balanceado, move para o proximo e execura novamente a verificação
+				arvore->raiz = arvore->raiz->esq;
+				Cont++;
+				balancearEsq(arvore);
+				return;
+				}
+		}else if(arvore->raiz->esq->alt < arvore->raiz->esq->altdireita{//Caso do joelho
 			int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
 			if(calcB <= -2 || calcB >= 2){
 				arvore->raiz = arvore->raiz->dir;
@@ -126,11 +140,53 @@ void *balancearEsq(TpArvore arvore){
 					arvore->raiz->esq->esq = NULL;
 				}else
 					arvore->raiz->esq->dir = NULL;
-		}
-	}	
-}
+				arvore->raiz = arvore->raiz->dir;
+				Cont++;
+				balancearEsq(arvore);
+				return
+			}else{
+				arvore->raiz = arvore->raiz->dir;
+				Cont++;
+				balancearEsq(arvore);
+				return;
+			}
 
-}
+
+	}else{ //{(arvore->raiz->esq->alt = arvore->raiz->esq->altdireita)}
+				arvore->raiz = arvore->raiz->esq;
+				Cont = 1;
+				balancearEsq(arvore);
+				while(Cont != 0){
+					arvore->raiz = arvore->raiz->pai;
+				}
+
+			}
+
+		}else{//arvore->raiz->esq == NULL (e o direito NAO e nulo)
+			arvore->raiz->dir->altesquerda == 0;
+			int calcB = arvore->raiz->dir - arvore->raiz->dir->altesquerda;
+			if(calcB <= -2 || calcB >= 2){
+				arvore->raiz = arvore->raiz->dir;
+				TpNodo *aux = arvore->raiz;
+				arvore->raiz->pai = arvore->raiz->pai->pai;
+				arvore->raiz->esq = aux->pai;
+				arvore->raiz->pai->esq = arvore->raiz;
+				arvore->raiz->esq->pai = arvore->raiz;
+				arvore->raiz->esq->dir = NULL;
+				arvore->raiz->esq->esq = NULL;
+				arvore->raiz = arvore->raiz->dir;
+				balancearEsq(arvore);
+				return
+			}else{
+				arvore->raiz = arvore->raiz->dir;
+				balancearEsq(arvore);
+				return;
+				}
+			}
+
+	}
+
+
 
 int main(){
 	TpArvore *arvore=(TpArvore*)malloc(sizeof(TpArvore));
