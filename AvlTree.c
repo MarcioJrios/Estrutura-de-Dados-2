@@ -36,13 +36,14 @@ void *inserir(int key, TpArvore *arvore){
 			nodo->pai = NULL;
 			printf("d");
 			arvore->raiz = nodo;
-			NDir = 0;
-			NEsq = 0;
+			arvore->NDir = 0;
+			arvore->NEsq = 0;
 	}else	if(key == arvore->raiz->chave){
 			printf("Chave ja existente!");
 			return;
 		}else if(key > arvore->raiz->chave ){
 			if(arvore->raiz->dir != NULL){
+				arvore->raiz = arvore->raiz->dir;
 				inserir(key, arvore);
 			}else{
 				TpNodo *nodo = (TpNodo*)malloc(sizeof(TpNodo));
@@ -52,16 +53,10 @@ void *inserir(int key, TpArvore *arvore){
 				nodo->dir = NULL;
 				nodo->alt = 0;
 				nodo->nivel = arvore->raiz->nivel + 1;
-				if(arvore->raiz->esq == NULL)
-					nodo->altesquerda = 0;
-				else{
-					nodo->altesquerda = arvore->raiz->esq->alt;
-					}
-				nodo->altdireita = 0;
 				arvore->raiz->dir = nodo;
 				arvore->raiz = arvore->raiz->dir;
-				if(arvore.NDir < arvore->raiz->nivel)
-					arvore.NDir = arvore->raiz->nivel;
+				if(arvore->NDir < arvore->raiz->nivel)
+					arvore->NDir = arvore->raiz->nivel;
 				}
 			}else {//key < raiz.chave
 				if(arvore->raiz->esq != NULL){
@@ -75,27 +70,22 @@ void *inserir(int key, TpArvore *arvore){
 					nodo->dir = NULL;
 					nodo->alt = 0;
 					nodo->nivel = arvore->raiz->nivel + 1;
-					if(arvore->raiz->dir == NULL)
-						nodo->altdireita = 0;
-					else
-						nodo->altdireita = arvore->raiz->dir->alt;
-					nodo->altesquerda = 0;
 					arvore->raiz->esq = nodo;
 					arvore->raiz = arvore->raiz->esq;
-					if(arvore.NEsq < arvore->raiz->nivel)
-						arvore.NEsq = arvore->raiz->nivel;
+					if(arvore->NEsq < arvore->raiz->nivel)
+						arvore->NEsq = arvore->raiz->nivel;
 			}
 		}
 }
 
-void *balancearDir(TpArvore arvore){
+void *balancearDir(TpArvore *arvore){
 		if(arvore->raiz->esq == NULL && arvore->raiz->dir == NULL){//Se estiver em uma folha finaliza
 			return;
 		}else if(arvore->raiz->esq != NULL){//Verifica se os filhos sao nulos para fazer a comparação de altura
-			if(arvore-raiz->dir == NULL)
+			if(arvore->raiz->dir == NULL)
 				arvore->raiz->esq->altdireita = 0;
 			else
-				arvore->raiz->esq->altdireita = arvore->raiz->dir->altura;
+				arvore->raiz->esq->altdireita = arvore->raiz->dir->alt;
 			if(arvore->raiz->esq->alt > arvore->raiz->esq->altdireita){//se a altura do filho esquerdo for maior que o direito
 				int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
 				if(calcB <= -2 || calcB >= 2){//Caso do joelho
@@ -122,7 +112,7 @@ void *balancearDir(TpArvore arvore){
 					balancearEsq(arvore);
 					return;
 					}
-			}else if(arvore->raiz->esq->alt < arvore->raiz->esq->altdireita{//Caso do left left
+			}else if(arvore->raiz->esq->alt < arvore->raiz->esq->altdireita){//Caso do left left
 				int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
 				if(calcB <= -2 || calcB >= 2){
 					arvore->raiz = arvore->raiz->dir;
@@ -191,14 +181,14 @@ void *balancearDir(TpArvore arvore){
 		}
 }
 
-void *balancearEsq(TpArvore arvore){
+void *balancearEsq(TpArvore *arvore){
 	if(arvore->raiz->esq == NULL && arvore->raiz->dir == NULL){//Se estiver em uma folha finaliza
 		return;
 	}else if(arvore->raiz->esq != NULL){//Verifica se os filhos sao nulos para fazer a comparação de altura
-		if(arvore-raiz->dir == NULL)
+		if(arvore->raiz->dir == NULL)
 			arvore->raiz->esq->altdireita = 0;
 		else
-			arvore->raiz->esq->altdireita = arvore->raiz->dir->altura;
+			arvore->raiz->esq->altdireita = arvore->raiz->dir->alt;
 		if(arvore->raiz->esq->alt > arvore->raiz->esq->altdireita){//se a altura do filho esquerdo for maior que o direito
 			int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
 			if(calcB <= -2 || calcB >= 2){//Caso do right right
@@ -215,7 +205,7 @@ void *balancearEsq(TpArvore arvore){
 					arvore->raiz->dir->esq = NULL;
 				//avança para o proximo no com maior altura e executa novamente a verificação
 				arvore->raiz = arvore->raiz->esq;
-				Cont++
+				Cont++;
 				balancearEsq(arvore);
 				return;
 			}else{
@@ -225,7 +215,7 @@ void *balancearEsq(TpArvore arvore){
 				balancearEsq(arvore);
 				return;
 				}
-		}else if(arvore->raiz->esq->alt < arvore->raiz->esq->altdireita{//Caso do joelho
+		}else if(arvore->raiz->esq->alt < arvore->raiz->esq->altdireita){//Caso do joelho
 			int calcB = arvore->raiz->esq->alt - arvore->raiz->esq->altdireita;
 			if(calcB <= -2 || calcB >= 2){
 				arvore->raiz = arvore->raiz->dir;
@@ -263,7 +253,7 @@ void *balancearEsq(TpArvore arvore){
 
 		}else{//arvore->raiz->esq == NULL (e o direito NAO e nulo)
 			arvore->raiz->dir->altesquerda == 0;
-			int calcB = arvore->raiz->dir - arvore->raiz->dir->altesquerda;
+			int calcB = arvore->raiz->dir->alt - arvore->raiz->dir->altesquerda;
 			if(calcB <= -2 || calcB >= 2){
 				arvore->raiz = arvore->raiz->dir;
 				TpNodo *aux = arvore->raiz;
@@ -287,7 +277,7 @@ void *balancearEsq(TpArvore arvore){
 
 	}
 
-void *balancear(TpArvore arvore){
+void *balancear(TpArvore *arvore){
 		if(arvore->raiz->esq->alt - arvore->raiz->dir->alt <=2){
 			arvore->raiz = arvore->raiz->dir;
 			TpNodo *aux = arvore->raiz;
@@ -327,7 +317,7 @@ int main(){
 				inserir(key, arvore);
 				while(arvore->raiz->pai != NULL){
 					if(arvore->raiz->pai->alt == arvore->raiz->alt){
-						TpNodo prev = (TpNodo*)malloc(sizeof(TpNodo));
+						TpNodo *prev = (TpNodo*)malloc(sizeof(TpNodo));
 						prev = arvore->raiz;
 						arvore->raiz = arvore->raiz->pai;
 						arvore->raiz->alt = prev->alt + 1;
@@ -340,7 +330,7 @@ int main(){
 					balancearEsq(arvore);
 					balancearDir(arvore);
 				}while(arvore->raiz->esq->alt - arvore->raiz->dir->alt <=2 || arvore->raiz->esq->alt - arvore->raiz->dir->alt >=2);
-				}
+				
 				break;
 			case 2:
 				break;
