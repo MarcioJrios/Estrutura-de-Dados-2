@@ -34,13 +34,12 @@ void *inserir(int key, TpArvore *arvore){
 			nodo->esq = NULL;
 			nodo->dir = NULL;
 			nodo->pai = NULL;
-			printf("d");
 			arvore->raiz = nodo;
 			arvore->NDir = 0;
 			arvore->NEsq = 0;
 	}else	if(key == arvore->raiz->chave){
 			printf("Chave ja existente!");
-			return;
+			return 0;
 		}else if(key > arvore->raiz->chave ){
 			if(arvore->raiz->dir != NULL){
 				arvore->raiz = arvore->raiz->dir;
@@ -78,7 +77,7 @@ void *inserir(int key, TpArvore *arvore){
 		}
 }
 
-void *balancearDir(TpArvore *arvore){
+/*void *balancearDir(TpArvore *arvore){
 		if(arvore->raiz->esq == NULL && arvore->raiz->dir == NULL){//Se estiver em uma folha finaliza
 			return;
 		}else if(arvore->raiz->esq != NULL){//Verifica se os filhos sao nulos para fazer a comparação de altura
@@ -297,8 +296,55 @@ void *balancear(TpArvore *arvore){
 		}else{
 			return;
 		}
-}
+}*/
 
+void imprimir(TpNodo *x){
+  if(x->dir != NULL && x->esq != NULL ){
+    imprimir(x->dir);
+    imprimir(x->esq);
+    printf("\nNodo : %d \n",x->chave);
+    if(x->pai == NULL){
+      printf("Esquerda : %d \n",x->esq->chave);
+      printf("Direita : %d \n",x->dir->chave);
+      return;
+    }else{
+      printf("Pai : %d \n",x->pai->chave);
+      printf("Esquerda : %d \n",x->esq->chave);
+      printf("Direita : %d \n",x->dir->chave);
+      return;
+    }
+
+  }else if(x->dir != NULL && x->esq == NULL){
+    imprimir(x->dir);
+    printf("\nNodo : %d \n",x->chave);
+    if(x->pai == NULL){
+      printf("Direita : %d \n",x->dir->chave);
+      return;
+    }else{
+      printf("Pai : %d \n",x->pai->chave);
+      printf("Direita : %d \n",x->dir->chave);
+      return;
+    }
+    return;
+  }else if(x->dir == NULL && x->esq != NULL){
+    imprimir(x->esq);
+    printf("\nNodo : %d \n",x->chave);
+    if(x->pai == NULL){
+      printf("Esquerda : %d \n",x->esq->chave);
+      return;
+    }else{
+      printf("Pai : %d \n",x->pai->chave);
+      printf("Esquerda : %d \n",x->esq->chave);
+      return;
+    }
+  }else if(x->dir == NULL && x->esq == NULL){
+    printf("\nNodo : %d \n",x->chave);
+    if(x->pai != NULL){
+      printf("Pai : %d \n",x->pai->chave);
+    }
+      return;
+    }
+}
 
 int main(){
 	TpArvore *arvore=(TpArvore*)malloc(sizeof(TpArvore));
@@ -325,14 +371,20 @@ int main(){
 						arvore->raiz = arvore->raiz->pai;
 					}
 				}
-				do{
+				/*do{
 					balancear(arvore);
 					balancearEsq(arvore);
 					balancearDir(arvore);
 				}while(arvore->raiz->esq->alt - arvore->raiz->dir->alt <=2 || arvore->raiz->esq->alt - arvore->raiz->dir->alt >=2);
-				
+				*/
+				system("clear");
+				printf("\nChave inserida com sucesso!\n\n");
 				break;
 			case 2:
+				system("clear");
+				imprimir(arvore->raiz);
+				break;
+			case 0;
 				break;
 			default:
 				printf("opção invalida!");
