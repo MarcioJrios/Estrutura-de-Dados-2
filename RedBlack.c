@@ -111,38 +111,45 @@ void Rcase3(TpArvore *arvore){
   nodo = arvore->raiz;
   if(arvore->raiz->pai->esq != NULL && arvore->raiz->pai->esq == arvore->raiz){
     if(arvore->raiz->pai->pai != NULL){
+      aux = arvore->raiz->pai->pai;
+      arvore->raiz->pai->pai = arvore->raiz;
+      arvore->raiz->pai->esq = arvore->raiz->dir;
       arvore->raiz->dir = arvore->raiz->pai;
-      arvore->raiz->pai = nodo->pai->pai;
-      arvore->raiz->dir->pai = arvore->raiz;
-      arvore->raiz->pai->esq = arvore->raiz;// LEMBRAR DE ARRUMAR ISSO
-      arvore->raiz->dir->esq = nodo->dir;
+      arvore->raiz->pai = aux;
+      if(arvore->raiz->chave > arvore->raiz->pai->chave)
+        arvore->raiz->pai->dir = arvore->raiz;
+      else
+        arvore->raiz->pai->esq = arvore->raiz;
       arvore->raiz->cor = 1;
       arvore->raiz->dir->cor = 0;
       arvore->raiz = arvore->raiz->esq;
     }else{
+      arvore->raiz->pai->pai = arvore->raiz;
+      arvore->raiz->pai->esq = arvore->raiz->dir;
       arvore->raiz->dir = arvore->raiz->pai;
       arvore->raiz->pai = NULL;
-      arvore->raiz->dir->pai = arvore->raiz;
-      arvore->raiz->dir->esq = nodo->dir;
       arvore->raiz->cor = 1;
       arvore->raiz->dir->cor = 0;
       arvore->raiz = arvore->raiz->esq;
   }
   }else if(arvore->raiz->pai->dir != NULL && arvore->raiz->pai->dir == arvore->raiz){
     if(arvore->raiz->pai->pai != NULL){
+      aux = arvore->raiz->pai->pai;
+      arvore->raiz->pai->pai = arvore->raiz;
+      arvore->raiz->pai->dir = arvore->raiz->esq;
       arvore->raiz->esq = arvore->raiz->pai;
-      arvore->raiz->pai = nodo->pai->pai;
-      arvore->raiz->esq->pai = arvore->raiz;//lembrar de verificar o pai da raiz
-      arvore->raiz->pai->dir = arvore->raiz;
-      arvore->raiz->esq->dir = nodo->esq;
+      arvore->raiz->pai = aux;
+      if(arvore->raiz->chave > arvore->raiz->pai->chave)
+        arvore->raiz->pai->dir = arvore->raiz;
+      else
+        arvore->raiz->pai->esq = arvore->raiz;
       arvore->raiz->cor = 1;
       arvore->raiz->esq->cor = 0;
       arvore->raiz = arvore->raiz->dir;
     }else{
-      printf("d\n");
-      arvore->raiz->esq = nodo->pai;
-      arvore->raiz->esq->pai = arvore->raiz;//lembrar de verificar o pai da raiz
-      arvore->raiz->esq->dir = nodo->esq;
+      arvore->raiz->pai->pai = arvore->raiz;
+      arvore->raiz->pai->dir = arvore->raiz->esq;
+      arvore->raiz->esq = arvore->raiz->pai;
       arvore->raiz->pai = NULL;
       arvore->raiz->cor = 1;
       arvore->raiz->esq->cor = 0;
@@ -152,21 +159,31 @@ void Rcase3(TpArvore *arvore){
 }
 
 void Rcase2(TpArvore *arvore){
-  TpNodo *nodo = (TpNodo*)malloc(sizeof(TpNodo));
-  nodo = arvore->raiz->pai;
+  TpNodo *aux = (TpNodo*)malloc(sizeof(TpNodo));
+  aux = arvore->raiz->pai;
   if(arvore->raiz->pai->pai->chave > arvore->raiz->chave){
-      arvore->raiz->esq = arvore->raiz->pai;
+      arvore->raiz->pai->pai = arvore->raiz;
+      arvore->raiz->pai->dir = NULL;
+      arvore->raiz->esq = aux;
+      arvore->raiz->pai = aux->pai;
+      arvore->raiz->pai->esq = arvore->raiz;
+      arvore->raiz = arvore->raiz->esq;
+      /*arvore->raiz->esq = arvore->raiz->pai;
       arvore->raiz->pai = arvore->raiz->pai->pai;
       arvore->raiz->esq->pai = arvore->raiz;
       arvore->raiz->esq->dir = NULL;
-      arvore->raiz->pai->esq = arvore->raiz;
+      arvore->raiz->pai->esq = arvore->raiz;*/
+      printf("D\n");
       Rcase3(arvore);
+      printf("A\n");
     }else{
+      arvore->raiz->pai->pai = arvore->raiz;
+      arvore->raiz->pai->esq = NULL;
       arvore->raiz->dir = arvore->raiz->pai;
-      arvore->raiz->pai = arvore->raiz->pai->pai;
-      arvore->raiz->dir->pai = arvore->raiz;
-      arvore->raiz->dir->esq = NULL;
+      arvore->raiz->pai = aux->pai;
       arvore->raiz->pai->dir = arvore->raiz;
+      arvore->raiz = arvore->raiz->dir;
+      printf("E\n");
       Rcase3(arvore);
   }
 
@@ -177,44 +194,60 @@ void imprimir(TpNodo *nodo){
     imprimir(nodo->dir);
     imprimir(nodo->esq);
     printf("\nNodo : %d \n",nodo->chave);
+    printf("Cor : %d \n", nodo->cor);
     if(nodo->pai == NULL){
       printf("Esquerda : %d \n",nodo->esq->chave);
+      printf("Cor : %d \n", nodo->esq->cor);
       printf("Direita : %d \n",nodo->dir->chave);
+      printf("Cor : %d \n", nodo->dir->cor);
       return;
     }else{
       printf("Pai : %d \n",nodo->pai->chave);
+      printf("Cor : %d \n", nodo->pai->cor);
       printf("Esquerda : %d \n",nodo->esq->chave);
+      printf("Cor : %d \n", nodo->esq->cor);
       printf("Direita : %d \n",nodo->dir->chave);
+      printf("Cor : %d \n", nodo->dir->cor);
       return;
     }
 
   }else if(nodo->dir != NULL && nodo->esq == NULL){
     imprimir(nodo->dir);
     printf("\nNodo : %d \n",nodo->chave);
+    printf("Cor : %d \n", nodo->cor);
     if(nodo->pai == NULL){
       printf("Direita : %d \n",nodo->dir->chave);
+      printf("Cor : %d \n", nodo->dir->cor);
       return;
     }else{
       printf("Pai : %d \n",nodo->pai->chave);
+      printf("Cor : %d \n", nodo->pai->cor);
       printf("Direita : %d \n",nodo->dir->chave);
+      printf("Cor : %d \n", nodo->dir->cor);
       return;
     }
     return;
   }else if(nodo->dir == NULL && nodo->esq != NULL){
     imprimir(nodo->esq);
     printf("\nNodo : %d \n",nodo->chave);
+    printf("Cor : %d \n", nodo->cor);
     if(nodo->pai == NULL){
       printf("Esquerda : %d \n",nodo->esq->chave);
+      printf("Cor : %d \n", nodo->esq->cor);
       return;
     }else{
       printf("Pai : %d \n",nodo->pai->chave);
+      printf("Cor : %d \n", nodo->pai->cor);
       printf("Esquerda : %d \n",nodo->esq->chave);
+      printf("Cor : %d \n", nodo->esq->cor);
       return;
     }
   }else if(nodo->dir == NULL && nodo->esq == NULL){
     printf("\nNodo : %d \n",nodo->chave);
+    printf("Cor : %d \n", nodo->cor);
     if(nodo->pai != NULL){
       printf("Pai : %d \n",nodo->pai->chave);
+      printf("Cor : %d \n", nodo->pai->cor);
     }
       return;
     }
@@ -237,17 +270,17 @@ int main(){
 				inserir(key, arvore);
 				while(arvore->raiz->pai != NULL){
           if(arvore->raiz->pai->cor == arvore->raiz->cor){
-            if(arvore->raiz->pai->esq != NULL && arvore->raiz->pai->esq == arvore->raiz){//verifica se esta a esquerda do pai
-              if(arvore->raiz->pai->pai->esq != NULL && arvore->raiz->pai->pai->esq == arvore->raiz->pai){//verifica se o pai esta a esquerda de seu pai(joelho)
+            if(arvore->raiz->chave < arvore->raiz->pai->chave){//verifica se esta a esquerda do pai
+              if(arvore->raiz->pai->chave < arvore->raiz->pai->pai->chave){//arvore->raiz->pai->pai->esq == arvore->raiz->pai){//verifica se o pai esta a esquerda de seu pai(joelho)
                 if(arvore->raiz->pai->pai->dir != NULL && arvore->raiz->pai->pai->dir->cor == 0)//verifica a cor do tio
                   Rcase1(arvore);
-                  else
-                    Rcase3(arvore);
+                else
+                  Rcase3(arvore);
                 }else if(arvore->raiz->pai->pai->esq != NULL && arvore->raiz->pai->pai->esq->cor == 0)
                   Rcase1(arvore);
                 else
                   Rcase2(arvore);
-              }else if(arvore->raiz->pai->pai->esq != NULL && arvore->raiz->pai->pai->esq == arvore->raiz->pai){
+              }else if(arvore->raiz->pai->chave < arvore->raiz->pai->pai->chave){
                 if(arvore->raiz->pai->pai->dir != NULL && arvore->raiz->pai->pai->dir->cor == 0)
                   Rcase1(arvore);
                 else
